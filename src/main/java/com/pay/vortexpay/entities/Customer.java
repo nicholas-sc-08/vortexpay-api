@@ -33,6 +33,9 @@ public class Customer {
     @Column(name = "document", unique = true, nullable = false)
     private String document;
 
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
