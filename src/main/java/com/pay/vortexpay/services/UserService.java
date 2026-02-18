@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pay.vortexpay.dtos.response.UserResponseDTO;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream().map(user -> userMapper.toUserResponse(user)).collect(Collectors.toList());
@@ -35,8 +37,10 @@ public class UserService {
         userRepository.findUserByEmail(dto.email()).ifPresent((user) -> {
             throw new EmailAlreadyExistsException("User with email "+dto.email()+" already exists!");
         });
-        
         User user = userMapper.toUserEntity(dto);
+        String passwordHash = passwordEncoder.encode(user.getPassword());
+        user.setPassword(passwordHash);
+        
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserResponse(savedUser);
