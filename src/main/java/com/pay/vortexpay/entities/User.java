@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "user")
-@Table(name = "user")
+@Table(name = "tb_user")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class User {
@@ -35,6 +35,6 @@ public class User {
     private UserRole role;
 
     @ManyToOne()
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = true)
     private Customer customer;
 }
