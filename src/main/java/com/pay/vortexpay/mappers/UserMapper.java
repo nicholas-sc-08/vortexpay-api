@@ -34,7 +34,9 @@ public class UserMapper {
             user.getEmail(),
             user.getCustomer() != null ? user.getCustomer().getFullName() : null,
             user.getCustomer() != null ? user.getCustomer().getDocument() : null,
-            user.getRole()
+            user.getCustomer() != null ? user.getCustomer().getPhoneNumber() : null,
+            user.getRole(),
+            user.getCustomer() != null ? user.getCustomer().getCreatedAt() : null
         );
     }
 }

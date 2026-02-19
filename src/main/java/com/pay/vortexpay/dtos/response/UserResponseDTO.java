@@ -1,5 +1,6 @@
 package com.pay.vortexpay.dtos.response;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.pay.vortexpay.shared.UserRole;
@@ -9,5 +10,7 @@ public record UserResponseDTO(
     String email,
     String fullName,
     String document,
-    UserRole role
+    String phoneNumber,
+    UserRole role,
+    LocalDateTime createdAt
 ) {}
