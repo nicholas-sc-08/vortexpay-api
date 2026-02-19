@@ -7,8 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.pay.vortexpay.dtos.response.UserResponseDTO;
 import com.pay.vortexpay.dtos.request.UserCreateDTO;
+import com.pay.vortexpay.dtos.request.UserUpdateDTO;
+import com.pay.vortexpay.dtos.response.UserResponseDTO;
 import com.pay.vortexpay.entities.User;
 import com.pay.vortexpay.exceptions.EmailAlreadyExistsException;
 import com.pay.vortexpay.exceptions.UserNotFoundException;
@@ -24,6 +25,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private void encryptPassword(User user, String dtoPassword) {
+        if(!dtoPassword.isBlank()) {
+            String safePassword = passwordEncoder.encode(dtoPassword);
+            user.setPassword(safePassword);
+        }
+    }
+
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream().map(user -> userMapper.toUserResponse(user)).collect(Collectors.toList());
     }
@@ -37,12 +45,27 @@ public class UserService {
         userRepository.findUserByEmail(dto.email()).ifPresent((user) -> {
             throw new EmailAlreadyExistsException("User with email "+dto.email()+" already exists!");
         });
+        
         User user = userMapper.toUserEntity(dto);
         String passwordHash = passwordEncoder.encode(user.getPassword());
         user.setPassword(passwordHash);
-        
+
         User savedUser = userRepository.save(user);
 
+        return userMapper.toUserResponse(savedUser);
+    }
+
+    public UserResponseDTO updateUser(UUID id, UserUpdateDTO dto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID "+id+" does not exists!"));
+
+        userRepository.findUserByEmail(dto.email()).ifPresent(u -> {
+            throw new EmailAlreadyExistsException("User with email"+dto.email()+" already exists!");
+        });
+        
+        user.setEmail(dto.email());
+        encryptPassword(user, dto.password());
+        
+        User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
     }
 
