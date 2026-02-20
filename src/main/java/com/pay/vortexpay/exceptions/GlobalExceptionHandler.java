@@ -17,4 +17,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleUserNotFound(UserNotFoundException ex) {
         return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
     }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleCustomerNotFound(CustomerNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CustomerWithDocumentAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleDocumentAlreadyExists(CustomerWithDocumentAlreadyExistsException ex) {
+        return ResponseEntity.status(409).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CustomerWithPhoneNumberAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleCustomerWithPhoneNumberAlreadyExists(CustomerWithPhoneNumberAlreadyExistsException ex) {
+        return ResponseEntity.status(409).body(new ErrorMessage(ex.getMessage()));
+    }
 }
