@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,5 +44,12 @@ public class CustomerController {
     public ResponseEntity<CustomerResponseDTO> createCustomer(@RequestBody CustomerCreateDTO dto) {
         CustomerResponseDTO customer = customerService.createCustomer(dto);
         return ResponseEntity.status(201).body(customer);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "Delete Customer by ID", description = "Delete the customer by ID, if the customer with the param ID does not exists, show error 404.")
+    public ResponseEntity<?> deleteCustomerById(@PathVariable UUID id) {
+        customerService.deleteCustomerById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -42,4 +42,9 @@ public class CustomerService {
 
         return customerMapper.toCustomerResponse(newCustomer);
     }
+
+    public void deleteCustomerById(UUID id) {
+        customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+id+" does not exists!"));
+        customerRepository.deleteById(id);
+    }
 }

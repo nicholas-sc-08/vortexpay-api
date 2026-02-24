@@ -1,5 +1,7 @@
 package com.pay.vortexpay.dtos.request;
 
+import java.util.UUID;
+
 import com.pay.vortexpay.shared.UserRole;
 
 import jakarta.validation.constraints.Email;
@@ -15,5 +17,8 @@ public record UserCreateDTO(
     String password,
     
     @NotNull(message = "User role must be ADMIN or USER.")
-    UserRole role
+    UserRole role,
+
+    @NotNull(message = "Customer ID is required.")
+    UUID customerId
 ) {}
