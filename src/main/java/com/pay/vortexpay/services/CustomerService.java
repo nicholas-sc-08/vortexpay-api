@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.pay.vortexpay.dtos.request.CustomerCreateDTO;
+import com.pay.vortexpay.dtos.request.CustomerUpdateDTO;
 import com.pay.vortexpay.dtos.response.CustomerResponseDTO;
 import com.pay.vortexpay.entities.Customer;
 import com.pay.vortexpay.exceptions.CustomerNotFoundException;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final CustomerValidator customerValidator;
 
     public List<CustomerResponseDTO> findAllCustomers() {
         List<Customer> customer = customerRepository.findAll();
@@ -39,6 +41,20 @@ public class CustomerService {
 
         Customer customer = customerMapper.toCustomerEntity(dto);
         Customer newCustomer = customerRepository.save(customer);
+
+        return customerMapper.toCustomerResponse(newCustomer);
+    }
+
+    public CustomerResponseDTO updateCustomer(UUID id, CustomerUpdateDTO dto) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+id+" does not exists!"));
+        
+        customerRepository.findCustomerByDocument(dto.document()).ifPresent(c -> { throw new CustomerWithDocumentAlreadyExistsException("Customer with document "+dto.document()+" already exists!");});
+        customerRepository.findCustomerByPhoneNumber(dto.phoneNumber()).ifPresent(c -> { throw new CustomerWithPhoneNumberAlreadyExistsException("Customer with phone number "+dto.phoneNumber()+" already exists!");});
+        
+        customerValidator.validateUpdate(customer, dto);
+
+        Customer customerEntity = customerMapper.toCustomerEntity(dto);
+        Customer newCustomer = customerRepository.save(customerEntity);
 
         return customerMapper.toCustomerResponse(newCustomer);
     }
