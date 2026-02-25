@@ -54,7 +54,7 @@ public class CustomerController {
         return ResponseEntity.status(200).body(customer);   
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete Customer by ID", description = "Delete the customer by ID, if the customer with the param ID does not exists, show error 404.")
     public ResponseEntity<?> deleteCustomerById(@PathVariable UUID id) {
         customerService.deleteCustomerById(id);
