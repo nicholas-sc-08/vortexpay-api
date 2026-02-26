@@ -52,8 +52,7 @@ public class UserService {
 
         Customer customer = customerRepository.findById(dto.customerId()).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+dto.customerId()+" does not exists!"));
         
-        User user = userMapper.toUserEntity(dto);
-        user.setCustomer(customer);
+        User user = userMapper.toUserEntity(dto, customer);
 
         String passwordHash = passwordEncoder.encode(user.getPassword());
         user.setPassword(passwordHash);

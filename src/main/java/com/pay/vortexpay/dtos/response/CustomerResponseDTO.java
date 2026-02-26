@@ -8,5 +8,6 @@ public record CustomerResponseDTO(
     String fullName,
     String document,
     String phoneNumber,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    UserResponseDTO user
 ) {}

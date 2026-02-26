@@ -17,7 +17,7 @@ public class CustomerValidator {
 
     public void validateUpdate(Customer customer, CustomerUpdateDTO dto) {
         if(!customer.getDocument().equals(dto.document())) {
-            customerRepository.findCustomerByDocument(dto.document()).ifPresent(c -> { throw new CustomerWithDocumentAlreadyExistsException("Customer with document "+dto.document()+" already exists!");});;
+            customerRepository.findCustomerByDocument(dto.document()).ifPresent(c -> { throw new CustomerWithDocumentAlreadyExistsException("Customer with document "+dto.document()+" already exists!");});
         }
 
         if(!customer.getPhoneNumber().equals(dto.phoneNumber())) {

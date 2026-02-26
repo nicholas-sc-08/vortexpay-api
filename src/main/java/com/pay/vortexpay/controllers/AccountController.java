@@ -19,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping
     @Operation(summary = "List all Accounts", description = "Return all the accounts of the system.")
+    @GetMapping
     public ResponseEntity<List<AccountResponseDTO>> findAllAccounts() {
         List<AccountResponseDTO> accounts = accountService.findAllAccounts();
         return ResponseEntity.status(200).body(accounts);        

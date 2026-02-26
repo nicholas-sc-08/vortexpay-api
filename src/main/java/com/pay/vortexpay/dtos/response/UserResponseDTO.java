@@ -7,6 +7,5 @@ import com.pay.vortexpay.shared.UserRole;
 public record UserResponseDTO(
     UUID id,
     String email,
-    UserRole role,
-    CustomerResponseDTO customer
+    UserRole role
 ) {}
