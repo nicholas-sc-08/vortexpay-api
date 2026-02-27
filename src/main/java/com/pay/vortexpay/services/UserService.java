@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pay.vortexpay.dtos.request.UserCreateDTO;
 import com.pay.vortexpay.dtos.request.UserUpdateDTO;
@@ -45,6 +46,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @Transactional
     public UserResponseDTO createUser(UserCreateDTO dto) {
         userRepository.findUserByEmail(dto.email()).ifPresent((user) -> {
             throw new EmailAlreadyExistsException("User with email "+dto.email()+" already exists!");
@@ -62,6 +64,7 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
+    @Transactional
     public UserResponseDTO updateUser(UUID id, UserUpdateDTO dto) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID "+id+" does not exists!"));
 
@@ -76,6 +79,7 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
+    @Transactional
     public void deleteUserById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with UUID "+id+" does not exists!"));
         userRepository.delete(user);

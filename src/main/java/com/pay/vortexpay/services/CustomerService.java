@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pay.vortexpay.dtos.request.CustomerCreateDTO;
 import com.pay.vortexpay.dtos.request.CustomerUpdateDTO;
@@ -35,6 +36,7 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(customer);
     }
 
+    @Transactional
     public CustomerResponseDTO createCustomer(CustomerCreateDTO dto) {
         customerRepository.findCustomerByDocument(dto.document()).ifPresent(c -> { throw new CustomerWithDocumentAlreadyExistsException("Customer with document "+dto.document()+" already exists!"); });
         customerRepository.findCustomerByPhoneNumber(dto.phoneNumber()).ifPresent(c -> { throw new CustomerWithPhoneNumberAlreadyExistsException("Customer with phone number "+dto.phoneNumber()+" already exists!"); });
@@ -45,6 +47,7 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(newCustomer);
     }
 
+    @Transactional
     public CustomerResponseDTO updateCustomer(UUID id, CustomerUpdateDTO dto) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+id+" does not exists!"));
         
@@ -59,6 +62,7 @@ public class CustomerService {
         return customerMapper.toCustomerResponse(newCustomer);
     }
 
+    @Transactional
     public void deleteCustomerById(UUID id) {
         customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+id+" does not exists!"));
         customerRepository.deleteById(id);

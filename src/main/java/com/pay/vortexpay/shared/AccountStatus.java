@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum AccountStatus {
     ACTIVE("active"), 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    BLOCKED("blocked");
     
     private final String status;
 

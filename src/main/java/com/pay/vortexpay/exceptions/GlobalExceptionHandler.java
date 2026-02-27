@@ -32,4 +32,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleCustomerWithPhoneNumberAlreadyExists(CustomerWithPhoneNumberAlreadyExistsException ex) {
         return ResponseEntity.status(409).body(new ErrorMessage(ex.getMessage()));
     }
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleAccountNotFound(AccountNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
+    }
 }
