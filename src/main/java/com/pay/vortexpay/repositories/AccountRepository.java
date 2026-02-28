@@ -12,4 +12,5 @@ import com.pay.vortexpay.entities.Account;
 public interface AccountRepository extends JpaRepository<Account, UUID>{
     public Optional<Account> findAccountByAccountNumber(String accountNumber);
     public Optional<Account> findByCustomerId(UUID id);
+    public boolean existsByAccountNumber(String accountNumber);
 }

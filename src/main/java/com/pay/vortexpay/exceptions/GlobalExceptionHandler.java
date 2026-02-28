@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
     }
 
+    @ExceptionHandler(CustomerAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleCustomerAlreadyExists(CustomerAlreadyExistsException ex) {
+        return ResponseEntity.status(409).body(new ErrorMessage(ex.getMessage()));
+    }
+
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleCustomerNotFound(CustomerNotFoundException ex) {
         return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
