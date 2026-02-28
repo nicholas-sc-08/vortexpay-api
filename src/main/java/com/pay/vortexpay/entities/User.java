@@ -4,13 +4,14 @@ import java.util.UUID;
 
 import com.pay.vortexpay.shared.UserRole;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
-    @ManyToOne()
-    @JoinColumn(name = "customer_id", nullable = true)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id", nullable = true, unique = true)
     private Customer customer;
 }
