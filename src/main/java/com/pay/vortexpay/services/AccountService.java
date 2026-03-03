@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pay.vortexpay.dtos.request.AccountCreateDTO;
 import com.pay.vortexpay.dtos.request.AccountStatusDTO;
+import com.pay.vortexpay.dtos.request.AccountDepositDTO;
 import com.pay.vortexpay.dtos.response.AccountResponseDTO;
 import com.pay.vortexpay.entities.Account;
 import com.pay.vortexpay.entities.Customer;
+import com.pay.vortexpay.exceptions.AccountBlockedException;
+import com.pay.vortexpay.exceptions.AccountInactiveException;
 import com.pay.vortexpay.exceptions.AccountNotFoundException;
 import com.pay.vortexpay.exceptions.CustomerAlreadyExistsException;
 import com.pay.vortexpay.exceptions.CustomerNotFoundException;
@@ -63,6 +66,24 @@ public class AccountService {
         account.setStatus(dto.status());
 
        accountRepository.save(account);
+    }
+
+    @Transactional
+    public AccountResponseDTO depositBalanceAccount(UUID id, AccountDepositDTO dto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Account with id "+id+" does not exists!"));
+        if(account.getStatus().equals(AccountStatus.INACTIVE)) {
+            throw new AccountInactiveException("Account is not active to make the deposit.");
+        }
+
+        if(account.getStatus().equals(AccountStatus.BLOCKED)) {
+            throw new AccountBlockedException("Cannot make the deposit because the account is blocked");
+        }
+
+        BigDecimal newBalance = account.getBalance().add(dto.balance());
+        account.setBalance(newBalance);
+        
+        Account updatedAccount = accountRepository.save(account);
+        return accountMapper.toAccountResponse(updatedAccount);
     }
 
     @Transactional
