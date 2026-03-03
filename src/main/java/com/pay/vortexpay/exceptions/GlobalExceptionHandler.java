@@ -1,5 +1,6 @@
 package com.pay.vortexpay.exceptions;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -50,6 +51,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountBlockedException.class)
     public ResponseEntity<ErrorMessage> handleAccountBlocked(AccountBlockedException ex) {
+        return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccountInsufficientFundsException.class)
+    public ResponseEntity<ErrorMessage> handleAccountInsufficientFunds(AccountInsufficientFundsException ex) {
         return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
     }
 }
