@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pay.vortexpay.dtos.request.AccountCreateDTO;
+import com.pay.vortexpay.dtos.request.AccountDepositDTO;
 import com.pay.vortexpay.dtos.request.AccountStatusDTO;
+import com.pay.vortexpay.dtos.request.AccountWithdrawDTO;
 import com.pay.vortexpay.dtos.response.AccountResponseDTO;
 import com.pay.vortexpay.services.AccountService;
 
@@ -50,10 +52,24 @@ public class AccountController {
     }
 
     @Operation(summary = "Update Account status", description = "Changes the status of an existing account (e.g., **ACTIVE**, **INACTIVE** or **BLOCKED**)."+"This is a partial update and does not affect other account details.")
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> changeAccountStatus(@PathVariable UUID id, @RequestBody @Valid AccountStatusDTO dto) {
-        accountService.changeAccountStatus(id, dto);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<AccountResponseDTO> changeAccountStatus(@PathVariable UUID id, @RequestBody @Valid AccountStatusDTO dto) {
+        AccountResponseDTO account = accountService.changeAccountStatus(id, dto);
+        return ResponseEntity.status(200).body(account);
+    }
+
+    @Operation(summary = "Deposit funds into account", description = "Increases the balance of the specified account. "+"**Note:** Only active accounts can receive deposits.")
+    @PatchMapping("/deposit/{id}")
+    public ResponseEntity<AccountResponseDTO> depositBalanceAccount(@PathVariable UUID id, @RequestBody @Valid AccountDepositDTO dto) {
+        AccountResponseDTO account = accountService.depositBalanceAccount(id, dto);
+        return ResponseEntity.status(200).body(account);
+    }
+
+    @Operation(summary = "Withdraw funds from account", description = "Decreases the balance of the specified account. "+"**Validation:** Checks if the account is active and if the current balance is sufficient for the transaction.")
+    @PatchMapping("/withdraw/{id}")
+    public ResponseEntity<AccountResponseDTO> withdrawBalanceAccount(@PathVariable UUID id, @RequestBody @Valid AccountWithdrawDTO dto) {
+        AccountResponseDTO account = accountService.withdrawBalanceAccount(id, dto);
+        return ResponseEntity.status(200).body(account);
     }
 
     @Operation(summary = "Delete Account by Customer ID", description = "Removes the account associated with the provided Customer ID. "+"**WARNING**: This is a destructive operation that triggers a cascading delete, "+"permanently removing the associated Customer and User records from the database.")    

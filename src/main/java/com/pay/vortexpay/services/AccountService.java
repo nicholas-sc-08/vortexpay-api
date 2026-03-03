@@ -10,9 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pay.vortexpay.dtos.request.AccountCreateDTO;
 import com.pay.vortexpay.dtos.request.AccountStatusDTO;
+import com.pay.vortexpay.dtos.request.AccountDepositDTO;
+import com.pay.vortexpay.dtos.request.AccountWithdrawDTO;
 import com.pay.vortexpay.dtos.response.AccountResponseDTO;
 import com.pay.vortexpay.entities.Account;
 import com.pay.vortexpay.entities.Customer;
+import com.pay.vortexpay.exceptions.AccountBlockedException;
+import com.pay.vortexpay.exceptions.AccountInactiveException;
+import com.pay.vortexpay.exceptions.AccountInsufficientFundsException;
 import com.pay.vortexpay.exceptions.AccountNotFoundException;
 import com.pay.vortexpay.exceptions.CustomerAlreadyExistsException;
 import com.pay.vortexpay.exceptions.CustomerNotFoundException;
@@ -30,6 +35,16 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final AccountNumberGenerator accountNumberGenerator;
+
+    private void validateAccountAvailability(Account account) {
+        if(account.getStatus().equals(AccountStatus.INACTIVE)) {
+            throw new AccountInactiveException("Account is not active.");
+        }
+
+        if(account.getStatus().equals(AccountStatus.BLOCKED)) {
+            throw new AccountBlockedException("Account is blocked");
+        }
+    }
 
     public List<AccountResponseDTO> findAllAccounts() {
         List<Account> accounts = accountRepository.findAll();
@@ -58,11 +73,42 @@ public class AccountService {
     }
 
     @Transactional
-    public void changeAccountStatus(UUID id, AccountStatusDTO dto) {
+    public AccountResponseDTO changeAccountStatus(UUID id, AccountStatusDTO dto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Account with id "+id+" does not exists!"));
         account.setStatus(dto.status());
 
-       accountRepository.save(account);
+        Account data = accountRepository.save(account);
+        return accountMapper.toAccountResponse(data);
+    }
+
+    @Transactional
+    public AccountResponseDTO depositBalanceAccount(UUID id, AccountDepositDTO dto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Account with id "+id+" does not exists!"));
+
+        validateAccountAvailability(account);
+
+        BigDecimal newBalance = account.getBalance().add(dto.balance());
+        account.setBalance(newBalance);
+        
+        Account updatedAccount = accountRepository.save(account);
+        return accountMapper.toAccountResponse(updatedAccount);
+    }
+
+    @Transactional
+    public AccountResponseDTO withdrawBalanceAccount(UUID id, AccountWithdrawDTO dto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Account with id "+id+" does not exists!"));
+
+        validateAccountAvailability(account);
+
+        if(account.getBalance().compareTo(dto.balance()) < 0) {
+            throw new AccountInsufficientFundsException("Insufficient funds to this operation. ");
+        }
+
+        BigDecimal newBalance = account.getBalance().subtract(dto.balance());
+        account.setBalance(newBalance);
+        
+        Account updatedAccount = accountRepository.save(account);
+        return accountMapper.toAccountResponse(updatedAccount);
     }
 
     @Transactional
