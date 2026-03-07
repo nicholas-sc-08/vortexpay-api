@@ -1,6 +1,5 @@
 package com.pay.vortexpay.exceptions;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,6 +16,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleUserNotFound(UserNotFoundException ex) {
         return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserWithCustomerAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleUserWithCustomerAlreadyExists(UserWithCustomerAlreadyExistsException ex) {
+        return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
     }
 
     @ExceptionHandler(CustomerAlreadyExistsException.class)
