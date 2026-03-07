@@ -16,6 +16,7 @@ import com.pay.vortexpay.entities.User;
 import com.pay.vortexpay.exceptions.CustomerNotFoundException;
 import com.pay.vortexpay.exceptions.EmailAlreadyExistsException;
 import com.pay.vortexpay.exceptions.UserNotFoundException;
+import com.pay.vortexpay.exceptions.UserWithCustomerAlreadyExistsException;
 import com.pay.vortexpay.mappers.UserMapper;
 import com.pay.vortexpay.repositories.CustomerRepository;
 import com.pay.vortexpay.repositories.UserRepository;
@@ -53,7 +54,8 @@ public class UserService {
         });
 
         Customer customer = customerRepository.findById(dto.customerId()).orElseThrow(() -> new CustomerNotFoundException("Customer with ID "+dto.customerId()+" does not exists!"));
-        
+        userRepository.findUserByCustomerId(dto.customerId()).ifPresent(u -> { throw new UserWithCustomerAlreadyExistsException("User with Customer ID "+dto.customerId()+" already exists!"); } );
+
         User user = userMapper.toUserEntity(dto, customer);
 
         String passwordHash = passwordEncoder.encode(user.getPassword());

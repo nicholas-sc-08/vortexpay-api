@@ -1,6 +1,7 @@
 package com.pay.vortexpay.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.pay.vortexpay.shared.AccountStatus;
@@ -30,7 +31,7 @@ public class Account {
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id")   
     private Customer customer;
 
     @Column(name = "account_number")
@@ -42,8 +43,12 @@ public class Account {
     @Column(name = "status")
     private AccountStatus status;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @PrePersist
     protected void onCreateAccount() {
         this.status = AccountStatus.ACTIVE;
+        this.createdAt = LocalDateTime.now();
     }
 }

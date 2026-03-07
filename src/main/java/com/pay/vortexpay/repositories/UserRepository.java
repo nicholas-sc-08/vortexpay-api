@@ -11,4 +11,5 @@ import com.pay.vortexpay.entities.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID>{
     public Optional<User> findUserByEmail(String email);
+    public Optional<User> findUserByCustomerId(UUID id);
 }
