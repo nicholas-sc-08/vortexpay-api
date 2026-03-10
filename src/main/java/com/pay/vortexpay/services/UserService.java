@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +28,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    private void encryptPassword(User user, String dtoPassword) {
-        if(!dtoPassword.isBlank()) {
-            String safePassword = passwordEncoder.encode(dtoPassword);
-            user.setPassword(safePassword);
-        }
-    }
+    private final CryptService cryptService;
 
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream().map(user -> userMapper.toUserResponse(user)).collect(Collectors.toList());
@@ -58,8 +50,7 @@ public class UserService {
 
         User user = userMapper.toUserEntity(dto, customer);
 
-        String passwordHash = passwordEncoder.encode(user.getPassword());
-        user.setPassword(passwordHash);
+        cryptService.encryptPassword(user, dto.password());
 
         User savedUser = userRepository.save(user);
 
@@ -75,7 +66,7 @@ public class UserService {
         });
         
         user.setEmail(dto.email());
-        encryptPassword(user, dto.password());
+        cryptService.encryptPassword(user, dto.password());
         
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
