@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pay.vortexpay.dtos.request.TransactionDepositDTO;
+import com.pay.vortexpay.dtos.request.TransactionWithdrawDTO;
 import com.pay.vortexpay.dtos.response.TransactionResponseDTO;
 import com.pay.vortexpay.services.TransactionService;
 
@@ -40,10 +41,17 @@ public class TransactionController {
         return ResponseEntity.status(200).body(transaction);
     }
 
-    @PostMapping
+    @PostMapping("/deposit")
     @Operation(summary = "Execute account deposit", description = "Creates a new transaction record of type 'DEPOSIT', increments the destination account balance, and generates a persistent audit log.")
     public ResponseEntity<TransactionResponseDTO> transactionDepositAccount(@RequestBody @Valid TransactionDepositDTO dto) {
         TransactionResponseDTO transaction = transactionService.transactionDepositAccount(dto);
+        return ResponseEntity.status(201).body(transaction);
+    }
+
+    @PostMapping("/withdraw")
+    @Operation(summary = "Execute account withdraw", description = "Decreases the balance of a specific account by creating a 'WITHDRAW' transaction record. Validates if the account exists and has sufficient funds before processing.")
+    public ResponseEntity<TransactionResponseDTO> transactionWithdrawAccount(@RequestBody @Valid TransactionWithdrawDTO dto) {
+        TransactionResponseDTO transaction = transactionService.transactionWithdrawAccount(dto);
         return ResponseEntity.status(201).body(transaction);
     }
 }

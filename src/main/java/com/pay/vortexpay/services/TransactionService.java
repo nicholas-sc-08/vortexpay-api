@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pay.vortexpay.dtos.request.TransactionDepositDTO;
+import com.pay.vortexpay.dtos.request.TransactionWithdrawDTO;
 import com.pay.vortexpay.dtos.response.TransactionResponseDTO;
 import com.pay.vortexpay.entities.Account;
 import com.pay.vortexpay.entities.Transaction;
-import com.pay.vortexpay.exceptions.TransactionNotFoundException;
 import com.pay.vortexpay.exceptions.AccountNotFoundException;
+import com.pay.vortexpay.exceptions.TransactionNotFoundException;
 import com.pay.vortexpay.mappers.TransactionMapper;
 import com.pay.vortexpay.repositories.AccountRepository;
 import com.pay.vortexpay.repositories.TransactionRepository;
@@ -38,6 +39,17 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponseDTO transactionDepositAccount(TransactionDepositDTO dto) {
+        Account sourceAccount = accountRepository.findById(dto.sourceAccount()).orElseThrow(() -> new AccountNotFoundException("Source account with id "+dto.sourceAccount()+" does not exists!"));
+        Account destinationAccount = accountRepository.findById(dto.destinationAccount()).orElseThrow(() -> new AccountNotFoundException("Destination account with id "+dto.destinationAccount()+" does not exists!"));
+
+        Transaction entity = transactionMapper.toTransactionEntity(dto, sourceAccount, destinationAccount);
+        Transaction transaction = transactionRepository.save(entity);
+
+        return transactionMapper.toTransactionResponse(transaction);
+    }
+
+    @Transactional
+    public TransactionResponseDTO transactionWithdrawAccount(TransactionWithdrawDTO dto) {
         Account sourceAccount = accountRepository.findById(dto.sourceAccount()).orElseThrow(() -> new AccountNotFoundException("Source account with id "+dto.sourceAccount()+" does not exists!"));
         Account destinationAccount = accountRepository.findById(dto.destinationAccount()).orElseThrow(() -> new AccountNotFoundException("Destination account with id "+dto.destinationAccount()+" does not exists!"));
 
