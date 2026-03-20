@@ -64,7 +64,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InsuficientFundsException.class)
-    public ResponseEntity<ErrorMessage> handInsuficientFunds(InsuficientFundsException ex) {
+    public ResponseEntity<ErrorMessage> handleInsuficientFunds(InsuficientFundsException ex) {
         return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorMessage> handleInvalidPassword(InvalidPasswordException ex) {
+        return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SecurityErrorException.class)
+    public ResponseEntity<ErrorMessage> handleSecurityError(SecurityErrorException ex) {
+        return ResponseEntity.status(409).body(new ErrorMessage(ex.getMessage()));
     }
 }
