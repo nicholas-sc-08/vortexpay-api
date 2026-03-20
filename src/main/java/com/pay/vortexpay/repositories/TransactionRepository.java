@@ -1,5 +1,6 @@
 package com.pay.vortexpay.repositories;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +10,4 @@ import com.pay.vortexpay.entities.Transaction;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-
 }

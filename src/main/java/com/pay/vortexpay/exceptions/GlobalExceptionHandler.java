@@ -58,8 +58,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
     }
 
-    @ExceptionHandler(AccountInsufficientFundsException.class)
-    public ResponseEntity<ErrorMessage> handleAccountInsufficientFunds(AccountInsufficientFundsException ex) {
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleTransactionNotFound(TransactionNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InsuficientFundsException.class)
+    public ResponseEntity<ErrorMessage> handInsuficientFunds(InsuficientFundsException ex) {
         return ResponseEntity.status(422).body(new ErrorMessage(ex.getMessage()));
     }
 }
