@@ -27,6 +27,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      API_SECURITY_TOKEN_SECRET=sua-chave-secreta-aqui: "123456"
 
 volumes:
   postgres_data:
