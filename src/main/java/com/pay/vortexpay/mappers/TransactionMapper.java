@@ -1,5 +1,7 @@
 package com.pay.vortexpay.mappers;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.pay.vortexpay.dtos.request.TransactionDepositDTO;
@@ -25,10 +27,9 @@ public class TransactionMapper {
         return transaction;
     }
 
-    public Transaction toTransactionEntity(TransactionWithdrawDTO dto, Account sourceAccount, Account destinationAccount) {
+    public Transaction toTransactionEntity(TransactionWithdrawDTO dto, Account sourceAccount) {
         Transaction transaction = new Transaction();
 
-        transaction.setDestinationAccount(destinationAccount);
         transaction.setSourceAccount(sourceAccount);
 
         transaction.setAmount(dto.amount());
@@ -39,10 +40,13 @@ public class TransactionMapper {
     }
 
     public TransactionResponseDTO toTransactionResponse(Transaction transaction) {
+        UUID sourceAccountId = transaction.getSourceAccount() != null ? transaction.getSourceAccount().getId() : null;
+        UUID destinationAccountId = transaction.getDestinationAccount() != null ? transaction.getDestinationAccount().getId() : null;
+
         return new TransactionResponseDTO(
             transaction.getId(),
-            transaction.getSourceAccount().getId(),
-            transaction.getDestinationAccount().getId(),
+            sourceAccountId,
+            destinationAccountId,
             transaction.getAmount(),
             transaction.getTransactionType(),
             transaction.getDescription(),

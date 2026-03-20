@@ -24,8 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TransactionService {
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
     private final TransactionMapper transactionMapper;
+    private final TransactionValidator transactionValidator;
+    private final AccountRepository accountRepository;
 
     public List<TransactionResponseDTO> findAllTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
@@ -42,6 +43,8 @@ public class TransactionService {
         Account sourceAccount = accountRepository.findById(dto.sourceAccount()).orElseThrow(() -> new AccountNotFoundException("Source account with id "+dto.sourceAccount()+" does not exists!"));
         Account destinationAccount = accountRepository.findById(dto.destinationAccount()).orElseThrow(() -> new AccountNotFoundException("Destination account with id "+dto.destinationAccount()+" does not exists!"));
 
+        transactionValidator.depositOnAccount(sourceAccount, destinationAccount, dto.amount());
+
         Transaction entity = transactionMapper.toTransactionEntity(dto, sourceAccount, destinationAccount);
         Transaction transaction = transactionRepository.save(entity);
 
@@ -51,9 +54,10 @@ public class TransactionService {
     @Transactional
     public TransactionResponseDTO transactionWithdrawAccount(TransactionWithdrawDTO dto) {
         Account sourceAccount = accountRepository.findById(dto.sourceAccount()).orElseThrow(() -> new AccountNotFoundException("Source account with id "+dto.sourceAccount()+" does not exists!"));
-        Account destinationAccount = accountRepository.findById(dto.destinationAccount()).orElseThrow(() -> new AccountNotFoundException("Destination account with id "+dto.destinationAccount()+" does not exists!"));
 
-        Transaction entity = transactionMapper.toTransactionEntity(dto, sourceAccount, destinationAccount);
+        transactionValidator.withdrawOfAccount(sourceAccount, dto.amount());
+
+        Transaction entity = transactionMapper.toTransactionEntity(dto, sourceAccount);
         Transaction transaction = transactionRepository.save(entity);
 
         return transactionMapper.toTransactionResponse(transaction);

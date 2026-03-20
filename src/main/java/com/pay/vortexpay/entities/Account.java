@@ -54,5 +54,6 @@ public class Account {
     protected void onCreateAccount() {
         this.status = AccountStatus.ACTIVE;
         this.createdAt = LocalDateTime.now();
+        this.balance = BigDecimal.TEN;
     }
 }

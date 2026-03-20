@@ -1,5 +1,7 @@
 package com.pay.vortexpay.mappers;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.pay.vortexpay.dtos.response.AccountResponseDTO;
@@ -16,13 +18,16 @@ public class AccountMapper {
     }
 
     public AccountResponseDTO toAccountResponse(Account account) {
+        UUID customerId = account.getCustomer() != null ? account.getCustomer().getId() : null;
+        String customerName = account.getCustomer() != null ? account.getCustomer().getFullName() : null;
+        
         return new AccountResponseDTO(
             account.getId(),
             account.getAccountNumber(),
             account.getBalance(),
             account.getStatus(),
-            account.getCustomer().getId(),
-            account.getCustomer().getFullName()
+            customerId,
+            customerName
         );
     }
 }
